@@ -1,0 +1,23 @@
+{
+  "slug": "Espectros",
+  "name": "ESPECTROS",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "ESPECTROS",
+  "author": "Mauricio Vásquez Arias",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "Lyapunov",
+      "name": "LYAPUNOV",
+      "description": "Péndulos gemelos caóticos: la divergencia como sonido, notas en afinaciones no temperadas y el horizonte de predictibilidad como evento",
+      "tags": ["Oscillator", "Physical modeling", "Low-frequency oscillator", "Random", "Visual", "Quantizer"]
+    }
+  ]
+}
