@@ -1,7 +1,7 @@
 // Afinaciones.hpp — catálogo de afinaciones no temperadas y no occidentales (generado desde ESPECTROS/tunings.js)
 #pragma once
 
-namespace lyap {
+namespace espectros {
 struct Afinacion { const char* nombre; const char* grupo; const char* nota; float periodo; int n; float cents[24]; };
 static const int N_AFINACIONES = 38;
 static const Afinacion AFINACIONES[N_AFINACIONES] = {
@@ -44,4 +44,4 @@ static const Afinacion AFINACIONES[N_AFINACIONES] = {
   {"12-TET (referencia)", "Temperadas", "La octava en doce partes iguales: el piano, como punto de comparación.", 1200.0000f, 12, {0.000f, 100.000f, 200.000f, 300.000f, 400.000f, 500.000f, 600.000f, 700.000f, 800.000f, 900.000f, 1000.000f, 1100.000f}},
   {"19-EDO", "Temperadas", "Diecinueve pasos iguales: terceras casi puras.", 1200.0000f, 19, {0.000f, 63.158f, 126.316f, 189.474f, 252.632f, 315.789f, 378.947f, 442.105f, 505.263f, 568.421f, 631.579f, 694.737f, 757.895f, 821.053f, 884.211f, 947.368f, 1010.526f, 1073.684f, 1136.842f}},
 };
-}  // namespace lyap
+}  // namespace espectros

@@ -1,5 +1,5 @@
-#include "../src/Nucleo.hpp"
-#include "../src/Scala.hpp"
+#include "../nucleos/lyapunov/Nucleo.hpp"
+#include "../nucleos/comun/Scala.hpp"
 #include <cstdio>
 #include <chrono>
 using namespace lyap;

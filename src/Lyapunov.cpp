@@ -6,8 +6,8 @@
 // cómo se separan: los gemelos son el estéreo, cada uno compone sus propias notas en una afinación no
 // temperada, y el instante en que dejan de parecerse (el horizonte de predictibilidad) es un evento.
 #include "plugin.hpp"
-#include "Nucleo.hpp"
-#include "Scala.hpp"
+#include "lyapunov/Nucleo.hpp"
+#include "comun/Scala.hpp"
 #include <osdialog.h>
 #include <atomic>
 #include <fstream>

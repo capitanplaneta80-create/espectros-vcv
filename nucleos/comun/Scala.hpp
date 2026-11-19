@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 
-namespace lyap {
+namespace espectros {
 
 struct ScalaArchivo {
   std::string descripcion;
@@ -55,4 +55,4 @@ inline bool scalaParse(const std::string& texto, ScalaArchivo& out) {
   return true;
 }
 
-}  // namespace lyap
+}  // namespace espectros

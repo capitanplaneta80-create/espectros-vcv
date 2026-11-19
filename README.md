@@ -1,4 +1,4 @@
-# ESPECTROS · LYAPUNOV para VCV Rack
+# ESPECTROS para VCV Rack · LYAPUNOV y GANGLIO
 
 **Ph.D. Mauricio Vásquez Arias**
 Profesor titular – Investigador asociado · Escuela de Artes y Humanidades, Universidad EAFIT
@@ -132,15 +132,69 @@ La afinación Scala queda guardada en el patch.
 4. **Biofeedback.** Una señal lenta (por ejemplo, el Scíon) a IMPULSO o a TIEMPO: el cuerpo empuja o frena el caos. CONGELAR con un pedal para suspenderlo.
 5. **Solo el caos.** MEZCLA en 2 (A−B) con FM y una afinación espectral. Mientras los gemelos coinciden hay silencio; el sonido aparece exactamente cuando dejan de ser iguales.
 
+# GANGLIO
+
+En los insectos, ritmos como el canto del grillo los producen **ganglios**: pequeños grupos de neuronas acopladas. GANGLIO es una red neuronal recurrente de tiempo continuo (CTRNN) de 8 neuronas que late sola y mueve un bordón. Es el mismo cerebro del firmware Ganglio del Cardputer, con sus ocho temperamentos.
+
+## Qué lo distingue
+
+En la biblioteca de VCV hay pocas redes neuronales, y ninguna es un sistema dinámico que se toque, se escuche y se vea a la vez. GANGLIO:
+
+- **Late solo.** Cada red tiene 4 pares de neuronas que oscilan, acoplados entre sí, con sesgos *center-crossing*. Ninguna se apaga y un vigía la despierta si se queda quieta más de 10 s.
+- **Se toca estimulando.** Cada canal de ESTÍMULO inyecta corriente en una neurona; un voltaje negativo la inhibe. Cada nota de la melodía da un pulso a una neurona.
+- **Escucha.** El sonido vuelve al cerebro: oye los cambios de su propio bordón o, con OÍDO conectado, cualquier otro instrumento.
+- **Se ve pensar.** A la izquierda, el ganglio: tamaño = lentitud (τ), brillo = actividad, conexiones en oro (excitan) y turquesa (inhiben). A la derecha, el electroencefalograma de los últimos 9 segundos.
+- **Su cerebro sale como voltaje.** 8 canales continuos, 8 compuertas y un pulso para mover cualquier otro módulo.
+
+## Qué mueve cada neurona
+
+| Neurona | Controla |
+|---|---|
+| 1–4 | Volumen de los 4 osciladores del bordón. Su desafinación sale de la diferencia entre vecinas: el batido aparece cuando dos neuronas no están de acuerdo |
+| 5 | Índice de FM |
+| 6 | Plegador de onda: ganancia y realimentación |
+| 7 | Corte del filtro, 150 Hz a 7,3 kHz |
+| 8 | Resonancia del filtro |
+
+## Temperamentos
+
+| Temperamento | Carácter |
+|---|---|
+| GRILLO | Pulso corto y regular |
+| LIBÉLULA | Rápido e irregular |
+| ENJAMBRE | El más sensible, casi caótico |
+| POLILLA | Irregular y muy activo |
+| MANTIS | Quieto, con sobresaltos |
+| LUCIÉRNAGA | Destellos lentos (~19 s) |
+| CIGARRA | Ciclo largo y amplio (~50 s) |
+| TERMITA | Lento y obstinado |
+
+Al cambiar de temperamento, la red transita 1,5 s hacia el nuevo. MUTAR altera la red actual y RED NUEVA crea otra con la misma arquitectura. Una red mutada se guarda con el patch; FÁBRICA vuelve al temperamento original.
+
+## El panel (24 HP)
+
+- **Fila 1 · el cerebro:** TEMPERAMENTO, METABOLISMO (×0,125 a ×8: escala todo el tiempo de la red), INTENSIDAD (cuánto mueve el cerebro al sonido), RUIDO sináptico, TÓNICA del bordón, NIVEL.
+- **Fila 2 · el sonido:** ACORDE del bordón (quinta, cuarta, séptima natural 4:5:6:7, armónicos, racimo de cuartos de tono), FILTRO (LP, BP o ambos), TIMBRE de la melodía (puro, FM2, campana, sub, metal), ESCUCHA, BORDÓN y CONGELAR.
+- **Gestos (botón + disparo):** SACUDIR, MUTAR, RED NUEVA, FÁBRICA.
+- **Entradas:** V/OCT de la tónica, CV de temperamento, metabolismo, intensidad y ruido, ESTÍMULO (polifónico, canal i → neurona i), melodía (V/OCT y compuerta), CONGELAR y OÍDO (audio externo).
+- **Salidas:** NEURONAS (8 canales, 0–10 V), DISPAROS (8 compuertas), PULSO, OÍDO (lo que escucha el cerebro), IZQ y DER.
+
+## Ideas de patch
+
+1. **El cerebro de otro.** NEURONAS a un MERGE/SPLIT y cada canal a los parámetros de otro módulo: LYAPUNOV con la ENERGÍA y el TIEMPO que decide GANGLIO.
+2. **Oír a un sintetizador.** La salida de tu Hydrasynth a OÍDO: cada frase cambia el ritmo de la red, y la red responde con el bordón.
+3. **Ritmo de insecto.** DISPAROS a un módulo de percusión, canal por canal. GRILLO da un pulso regular; ENJAMBRE, uno que nunca se repite.
+4. **Tocar un cerebro.** Un teclado MIDI a MEL V/O y MEL GATE con el timbre CAMPANA: cada nota empuja a una neurona y la red responde.
+
 ## Notas técnicas
 
 - La física es la de la suite ESPECTROS: péndulo doble m = L = 1, g = w0², integración RK4 a ~8 kHz, con subpasos automáticos a frecuencias altas.
 - Todo el estado es de cada instancia, así que varios LYAPUNOV pueden convivir en un patch.
 - Los relojes internos van en doble precisión, para no detenerse en sesiones largas.
-- El código está en `src/`:
-  - `Nucleo.hpp`: el instrumento, sin dependencias de Rack;
-  - `Lyapunov.cpp`: el módulo y la pantalla;
-  - `Afinaciones.hpp`: el catálogo;
-  - `Scala.hpp`: lector de archivos Scala.
-- Pruebas del núcleo en `test/`. Ninguna configuración satura ni produce valores inválidos.
+- **Núcleo y adaptadores.** Cada instrumento tiene su sonido en un núcleo C++ sin dependencias de plataforma, y un adaptador delgado por plataforma. Las reglas están en `nucleos/CONTRATO.md`.
+  - `nucleos/lyapunov/Nucleo.hpp` y `nucleos/ganglio/Nucleo.hpp`: los instrumentos;
+  - `nucleos/comun/`: la etapa de salida, el catálogo de afinaciones y el lector de archivos Scala;
+  - `src/`: los adaptadores de VCV Rack (módulos, paneles y pantallas).
+- El mismo núcleo sirve para MetaModule, Daisy y el Cardputer: `tools/portabilidad.sh` comprueba en cada cambio que compile sin excepciones, para Cortex-M7, y dentro de 32 KB.
+- Pruebas de los núcleos en `test/`. Ninguna configuración satura ni produce valores inválidos.
 - Licencia: GPL-3.0-or-later. Es la que exige la biblioteca de VCV para plugins de código abierto. Puede cambiarse si se prefiere otra distribución.
